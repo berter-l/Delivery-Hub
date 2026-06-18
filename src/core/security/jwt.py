@@ -1,4 +1,5 @@
 from datetime import datetime, timezone, timedelta
+from typing import Any, Coroutine
 
 from src.core.config import settings
 from src.models import Couriers
@@ -13,8 +14,7 @@ async def get_jwt_token(courier: int) -> dict[str, str]:
         jwt.encode,
         {
             "id": courier,
-            "exp": datetime.now(tz=timezone.utc)
-            + timedelta(minutes=settings.jwt.Exp_access),
+            "exp": datetime.now(tz=timezone.utc) + timedelta(minutes=settings.jwt.Exp_access),
         },
         key,
         algorithm=settings.jwt.JWT_ALGORITHM,
@@ -22,11 +22,20 @@ async def get_jwt_token(courier: int) -> dict[str, str]:
     refresh_token = await asyncio.to_thread(
         jwt.encode,
         {
-            "exp": datetime.now(tz=timezone.utc)
-            + timedelta(minutes=settings.jwt.Exp_refresh),
+            "exp": datetime.now(tz=timezone.utc) + timedelta(minutes=settings.jwt.Exp_refresh),
         },
         key,
         algorithm=settings.jwt.JWT_ALGORITHM,
     )
 
     return {"access_token": access_token, "refresh_token": refresh_token}
+
+
+async def decode_jwt_token(token: str) -> dict | None:
+    try:
+        data = await asyncio.to_thread(
+            jwt.decode, token, key, settings.jwt.JWT_ALGORITHM
+        )
+        return data
+    except jwt.ExpiredSignatureError:
+        raise jwt.ExpiredSignatureError()
