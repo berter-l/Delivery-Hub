@@ -1,10 +1,9 @@
 from datetime import datetime
 
-from sqlalchemy import ForeignKey, func
+from sqlalchemy import ForeignKey, func, Enum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-
-from src.models.base import Base
+from src.models.base import Base, Status
 
 
 class Orders(Base):
@@ -18,3 +17,5 @@ class Orders(Base):
     delivery_fee: Mapped[float]
     accepted_at: Mapped[datetime | None]
     delivered_at: Mapped[datetime | None]
+    description: Mapped[str | None]
+    status: Mapped[Status] = mapped_column(Enum(Status, validate_strings=True))

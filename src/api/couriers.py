@@ -1,19 +1,23 @@
+import logging
+
 from fastapi import APIRouter
 from fastapi.params import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.core.depends.depends import get_courier, get_courier_id, get_access_tokens
+from src.core.config import settings
+from src.core.dependencies.depends import (
+    get_courier,
+    get_courier_id,
+)
 from src.database import get_session
 from src.models import Couriers
 from src.services.couriers import (
     register_couriers_,
     login_couriers_,
     get_courier_profile,
-    get_courier_orders,
     courier_logout_,
 )
 from src.shemas.courier import RegisterSchema, LoginSchema, Get_profile_Shema
-from src.shemas.order import OrderSchema
 from src.shemas.token import Get_token_Shema
 
 router = APIRouter(prefix='/api/v1')
@@ -42,15 +46,6 @@ async def courier_me(
         courier: Couriers = Depends(get_courier)
 ) -> Get_profile_Shema:
     result = await get_courier_profile(courier)
-    return result
-
-
-@router.get('/couriers/me/orders', tags=["couriers"])
-async def courier_me_orders(
-        courier_id: int = Depends(get_courier_id),
-        session: AsyncSession = Depends(get_session)
-) -> list[OrderSchema]:
-    result = await get_courier_orders(session, courier_id)
     return result
 
 

@@ -1,4 +1,5 @@
 import asyncio
+import uuid
 from datetime import datetime, timezone, timedelta
 
 import jwt
@@ -18,11 +19,11 @@ exp_jwt = HTTPException(
 )
 
 
-async def get_jwt_token(courier_id: int) -> dict[str, str]:
+async def get_jwt_token(id: int | str) -> dict[str, str]:
     access_token = await asyncio.to_thread(
         jwt.encode,
         {
-            "id": courier_id,
+            "id": id,
             "exp": datetime.now(tz=timezone.utc)
             + timedelta(minutes=settings.jwt.Exp_access),
         },
@@ -32,7 +33,7 @@ async def get_jwt_token(courier_id: int) -> dict[str, str]:
     refresh_token = await asyncio.to_thread(
         jwt.encode,
         {
-            "id": courier_id,
+            "id": id,
             "exp": datetime.now(tz=timezone.utc)
             + timedelta(minutes=settings.jwt.Exp_refresh),
             "refresh": True

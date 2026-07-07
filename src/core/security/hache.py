@@ -9,5 +9,5 @@ async def get_hashed_password(password: str) -> str:
     return hashed_password
 
 
-async def check_hashed_password(hashed_password: str, check_password: bytes) -> bool:
+async def check_hashed_password(hashed_password: bytes, check_password: bytes) -> bool:
     return await asyncio.to_thread(bcrypt.checkpw, check_password, hashed_password)

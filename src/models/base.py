@@ -1,4 +1,5 @@
 from datetime import datetime
+from enum import Enum
 from typing import Annotated
 
 from sqlalchemy import func
@@ -16,7 +17,14 @@ class Base(DeclarativeBase):
     created_at: Mapped[datetime] = mapped_column(server_default=func.now())
 
 
-class PermissionsMixin():
-    is_admin: Mapped[default_type]
-    is_courier: Mapped[default_type]
-    is_partner: Mapped[default_type]
+class Roles(Enum):
+    ADMIN = 'admin'
+    COURIER = 'courier'
+    PARTNER = 'partner'
+
+
+class Status(Enum):
+    PENDING = 'pending'
+    ACCEPTED = 'accepted'
+    PICKUP = 'pickup'
+    DELIVERED = 'delivered'
